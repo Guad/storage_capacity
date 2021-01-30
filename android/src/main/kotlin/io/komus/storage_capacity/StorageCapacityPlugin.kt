@@ -10,6 +10,8 @@ import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry.Registrar
 import  android.os.StatFs
 import  android.os.Environment
+import  android.app.usage.StorageStatsManager
+import  android.os.storage.StorageManager
 
 /** StorageCapacityPlugin */
 public class StorageCapacityPlugin: FlutterPlugin, MethodCallHandler {
@@ -46,8 +48,8 @@ public class StorageCapacityPlugin: FlutterPlugin, MethodCallHandler {
       result.success("Android ${android.os.Build.VERSION.RELEASE}")
     }
     else if(call.method == "getFreeSpace"){
-      val stat = StatFs(Environment.getDataDirectory().getPath())
-      val bytesAvailable = stat.getFreeBytes()
+      val stat = StorageStatsManager()
+      val bytesAvailable = stat.getFreeBytes(StorageManager.UUID_DEFAULT)
       result.success(bytesAvailable)
     }
     else if(call.method == "getOccupiedSpace"){
@@ -55,10 +57,9 @@ public class StorageCapacityPlugin: FlutterPlugin, MethodCallHandler {
       val bytesOccupied = stat.getTotalBytes()
       result.success(bytesOccupied)
     } else if(call.method == "getTotalSpace"){
-      val stat = StatFs(Environment.getDataDirectory().getPath())
-      val bytesAvailable = stat.getFreeBytes()
-      val bytesOccupied = stat.getTotalBytes()
-      result.success(bytesOccupied+bytesAvailable)
+      val stat = StorageStatsManager()
+      val bytesAvailable = stat.getTotalBytes(StorageManager.UUID_DEFAULT)
+      result.success(bytesAvailable)
     }
     else {
       result.notImplemented()
